@@ -85,13 +85,16 @@ Git的分支，其实本质上仅仅是指向提交对象的可变指针。
   $ git branch -d testing
 ```
 
-#### 3.2 git工作流程最佳实践
+#### 3.2 fetch 与 pull
+当`git fetch`命令从服务器上抓取本地没有的数据时，它并不会修改工作目录中的内容。它只会获取数据然后让你自己合并。`git pull`在大多数情况下是一个`git fetch`紧接着一个`git merge`命令。
+
+#### 3.3 git工作流程最佳实践
 Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支用于组织与软件开发，部署相关的活动；辅助分支为了解决特定的问题而进行的各种开发活动。https://blog.csdn.net/Eacter/article/details/78552607 
 - 主分支：master / develop
 - 辅助分支： feature / release / hotfix
 <img src="1.png" style="padding-top:20px">
 
-#### 3.3 变基与合并
+#### 3.4 变基与合并
 - 合并(Merge): 它会把两个分支的最新快照(C3 和 C4)以及两者的共同祖先(C2)进行三方合并，合并的结果是生成一个新的快照(并提交)。
 <img src="2.png" style="padding-top:20px">
 
@@ -120,4 +123,32 @@ Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支
   $ git stash apply
 ```
 
+#### 4.3 修改多个提交信息
+- 压缩提交：通过变基，可以将一连串提交压缩成一个单独的提交。
+```
+  $ git rebase -i HEAD~3
+  #
+  # Commands:
+  #  p, pick = use commit
+  #  r, reword = use commit, but edit the commit message
+  #  e, edit = use commit, but stop for amending
+  #  s, squash = use commit, but meld into previous commit
+  #  f, fixup = like "squash", but discard this commit's log message
+  #  x, exec = run command (the rest of the line) using shell
+  #
+  指定squash而不是pick或edit
+```
 
+- 拆分提交: 拆分一个提交会撤销这个提交，然后多次地部分第暂存与提交知道完成你所需次数的提交。
+```
+  $ git reset HEAD^
+  实际上将会撤销那次提交并将修改的文件未暂存
+```
+
+- 从每一个提交移除一个文件: 有人粗心地通过`git add .` 提交了一个巨大的二进制文件，你想要从所有地方删除它。可能偶然提交了一个包含密码的文件，然而你想开源项目。
+```
+  $ git filter-branch --tree-filter 'rm -f passwords.txt' HEAD
+```
+
+#### 4.4 Git钩子
+Git 能在特定的重要动作发生时触发自定义脚本。客户端钩子由诸如提交和合并这样的操作所调用，而服务器端钩子作用于诸如接收被推送的提交这样的联网操作。
