@@ -1,7 +1,8 @@
 ---
-title: Git基本命令
+title: Git
 date: 2018-09-13 15:00:00
 tags:
+- Document
 - Git
 ---
 ### 1. Git简介
@@ -103,6 +104,7 @@ Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支
 **变基的风险**: 变基操作的实质是丢弃一些现有的提交，然后相应地新建一些内容一样但实际上不同的提交。如果你已经将提交推送至某个仓库，而其他人也已经从该仓库拉取提交并进行了后续工作，此时，你用 git rebase 命令重新整理了提交并再次推送，你的同伴因此将不得不再次将他们手头的工作与你的提交进行整合，如果接下来你还要拉取并整合他们修改过的提交，事情就会变得一团糟。总的原则是，不要对在你的仓库外有副本的分支执行变基。
 <img src="3.png" style="padding-top:20px">
 
+<br>
 ### 4. 其他
 #### 4.1 生成SSH公钥
 默认情况下，用户的SSH密钥存储在其 ~/.ssh 目录下。我们需要寻找一对以id_dsa或id_ras命名的文件，其中一个带有.pub扩展名，.pub文件是你的公钥，另一个则是私钥。
@@ -115,6 +117,7 @@ Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支
   config            id_dsa.pub
   $ ssh-keygen
 ```
+<br>
 
 #### 4.2 暂存文件
 将当前工作区的修改暂存起来，stash后，可以将其重新应用到当前工作区。
@@ -122,8 +125,31 @@ Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支
   $ git stash
   $ git stash apply
 ```
+<br>
 
-#### 4.3 修改多个提交信息
+#### 4.3 撤销错误commit
+- 错误commit后，仅撤销commit, 暂存区、工作内容不变
+```
+  $ git log
+  $ git reset --soft commit-id 
+  // commit-id为错误commit之前的commit-id
+```
+
+- 错误commit后，撤销commit和add， 工作内容不变
+```
+  $ git log
+  $ git reset -- mixed commit-id
+  // 该命令相当于恢复到git add 之前的状态，同时工作区的内容不变
+```
+
+- 错误commit后，想恢复到某个版本库的代码（暂存区、工作区均改变）
+```
+  $ git log
+  $ git reset --hard commit-id
+```
+<br>
+
+#### 4.4 修改多个提交信息
 - 压缩提交：通过变基，可以将一连串提交压缩成一个单独的提交。
 ```
   $ git rebase -i HEAD~3
@@ -149,6 +175,17 @@ Git Flow模型中定义了主分支和辅助分支两类分支。其中主分支
 ```
   $ git filter-branch --tree-filter 'rm -f passwords.txt' HEAD
 ```
+<br>
 
-#### 4.4 Git钩子
+#### 4.5 Git钩子
 Git 能在特定的重要动作发生时触发自定义脚本。客户端钩子由诸如提交和合并这样的操作所调用，而服务器端钩子作用于诸如接收被推送的提交这样的联网操作。
+<br>
+
+#### 4.6 Github Pages
+- Create a repository.
+- Go to the folder where you want to store your project, and clone the new repository
+` git clone https://github.com/username/username.github.io`
+- Enter the project folder and add an index.html file
+` echo "hello world" > index.html `
+- Add, commit, and push your changes
+- Fire up a broswer and go to http://username.github.io
