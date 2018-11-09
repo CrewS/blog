@@ -2,7 +2,6 @@
 title: MDN - CSS基本概念，flex布局与动画
 date: 2018-10-06 11:12:55
 tags:
-- MDN
 - CSS
 ---
 ### 1. 基础
@@ -522,14 +521,87 @@ ease-in-out: 先加速后减速
 
 <br/>
 ### 8. 动画 @keyframes
-animation-name: 指定一个关键帧动画的名字，这个动画名必须对应一个@keyframes规则
-animation-duration: 设置动画播放所需时间，单位为s
-animation-timing-function: 设置动画的播放方式，与transition-timing-function(ease-in)类似
-animation-delay: 指定动画开始时间，单位为s
-animation-iteration-count: 指定动画播放的循环次数
-animation-direction: 指定动画的播放方向
+{% raw %}
+<style>
+@keyframes wobble{
+  0%{ margin-left: 100px; background: green; }
+  40%{ margin-left: 150px; background: orange; }
+  60%{ margin-left: 75px; background: blue; }
+  100%{ margin-left: 100px; background: red; }
+}
+.animation{
+  width: 100px;
+  height: 100px;
+  animation: wobble 2s ease-in 0s infinite;
+}
+</style>
+<div class="animation"></div>
+{% endraw %}
+```
+@keyframes wobble{
+  0%{ margin-left: 100px; background: green; }
+  40%{ margin-left: 150px; background: orange; }
+  60%{ margin-left: 75px; background: blue; }
+  100%{ margin-left: 100px; background: red; }
+}
+.animation{
+  width: 100px;
+  height: 100px;
+  animation: wobble 2s ease-in 0s infinite;
+}
+```
+
+简写规则
+```
+animation: <animation-name> <animation-duration>
+           <animation-timing-function> <animation-delay>
+           <animation-iteration-count> <animation-direction>
+           <animation-play-state> <animation-fill-mode>, ...
+```
+
+*`@keyframes`*
+关键帧， 由@keyframes开头，后面紧跟动画的名称，加上一对花括号，里面的样式规则由多个百分比构成，每个百分比中是不同的CSS样式。
+
+*`animation-name`*
+指定一个关键帧动画的名字，这个动画名必须对应一个@keyframes规则
+
+*`animation-duration`*
+设置动画播放所需时间，也就是完成从0%~100%一次动画所需时间。单位为s
+
+*`animation-timing-function`*
+设置动画的播放方式，变换方式ease, ease-in, ease-in-out, ease-out, linear, cubic-bezier。
+
+*`animation-delay`*
+指定动画开始时间，单位为s
+
+*`animation-iteration-count`*
+指定动画播放的循环次数。 `infinite | <integer>`
+
+*`animation-direction`*
+指定动画的播放方向, normal为向前播放，alternate为反方向播放
+
+*`animation-play-state`*
+控制动画的播放状态, paused将正在播放的动画停下来， runing将暂停的动画重新播放
+
+*`animation-fill-mode`*
+定义动画开始前和结束后发生的操作。none按预期进行和结束，动画完成其最后一帧时，动画会翻转到初始帧处。 forwards 动画结束后继续应用最后帧的位置。 backwards 在向元素应用动画样式时迅速应用动画的初始帧。 both元素动画同时具有forwards和backwards的效果。
+
 <br/>
 
+### 9. 媒体查询
+```
+@media screen and (max-width:600px){}
+@media screen and (min-width:600px) and (max-width:900px){}
+```
+
+<br/>
+### 10. meta标签
+当responsive页面在手机测试的时候，会发现媒体查询都不会生效——页面仍展示位普通样式，只是全局缩小了。 这时需要添加`meta`标签
+```
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+```
+
+<br/>
 ### 参考资料
 
 - [MDN - CSS层叠样式表](https://developer.mozilla.org/zh-CN/docs/Web/CSS)
