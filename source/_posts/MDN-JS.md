@@ -1,10 +1,8 @@
 ---
-title: 【MDN】Javascript
+title: MDN - Javascript
 date: 2018-10-08 12:12:32
 tags:
-- Document
 - MDN
-- JS
 ---
 ### 1. 初级
 #### 1.1 语法和数据类型

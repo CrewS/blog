@@ -1,8 +1,7 @@
 ---
-title: Docker
-date: 2018-09-21 15:56:08
+title: Docker基本概念与操作
+date: 2018-09-08 15:56:08
 tags:
-- Document
 - Docker
 ---
 ### 1. Docker是什么？
@@ -74,6 +73,7 @@ $ docker start container_name/container_id  	| 启动容器
 $ docker stop container_name/container_id	    | 停止容器
 $ docker restart container_name/container_id	| 重启容器
 $ docker rm container_name/container_id	      | 删除容器
+$ docker exec -it container-id /bin/bash      | 进入容器
 仓库的操作	|
 $ docker login	                | 登录Dockerhub
 $ docker push xianhu/centos:git	| 将本地的镜像推送到Dockerhub

@@ -1,8 +1,7 @@
 ---
 title: React文档
-date: 2018-09-25 10:54:32
+date: 2018-10-25 10:54:32
 tags:
-- Document
 - React
 ---
 ### 1. Main Concept
@@ -215,3 +214,69 @@ Concretely, a higher-order component is a function that takes a component and re
 - On unmount, remove the change listener.
 
 You can image that in a large app, this same pattern of subscribing to `DataSource` and calling `setState` will occur over and over again. We want an abstraction that allows us to define this logic in a single place and share it across many components. This is where higher-order components excel.
+
+We can write a function that creates component, like CommentList that subscribe to `DataSource`. The first parameter is the wrapped component. The second parameter retrieves the data we're interested in, given a `DataSource` and the current props.
+```
+const CommentListWithSubscription = withSubscription(
+  CommentList,
+  (DataSource, props) => DataSource.getComments(props.id)
+)
+
+function withSubscription(WrappedComponent, selectData) {
+  return class extends React.Component {
+    state {
+      data: selectData(DataSource, props)
+    }
+
+    componentDidMount() {
+      DataSource.addChangeListener(this.handleChange)
+    }
+
+    componentWillUnmount() {
+      DataSource.removeChangeListener(this.handleChange)
+    }
+
+    handleChange() {
+      this.setState({
+        data: selectData(DataSource, this.props)
+      })
+    }
+
+    render() {
+      return <WrappedComponent data={this.state.data} {...this.props}>
+    }
+  }
+}
+```
+
+<br/>
+#### 2.8 Integrating with Other Libraries
+1. Intergrate with DOM Manipulation Plugins, like jQuery. Many jQuery plugins attach event listeners to the DOM so it's important to detach them in componentWillUnmount.
+```
+class SomePlugin extends React.Component{
+  componentDidMount() {
+    this.$el = $(this.el);
+    this.handleChange = this.handleChange.bind(this);
+    this.$el.on('change', this.handleChange)
+  }
+
+  componentWillUnmount() {
+    this.$el.off('change', this.handleChange)
+  }
+
+  handleChange(e) {
+    console.log(e.target.value)
+  }
+
+  render() {
+    return (
+      <select ref={el => this.el = el}>
+        <option value=1>1</option>
+        <option value=2>2</option>
+      </select>
+    );
+  }
+}
+```
+
+2. React can be embedded into other applications thanks to the flexibility of `ReactDOM.render()`. This lets us write applications in React piece by piece, and combine them with our existing server-generated templates and other client-side code.
