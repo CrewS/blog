@@ -43,60 +43,245 @@ ViewModel做的什么？就是写那些不能复用的业务代码。当交互�
 
 
 <br/>
-### 3. 数据劫持
-怎么做到，只执行`this.$data.myKey = 1`就可以触发与`myKey`相关的UI更新？
-1. 通过Object.defineProperty()来劫持对象属性的setter操作
-2. 
+### 3. Vue实现数据驱动
+怎么实现数据驱动？
+- 核心： Object.defineProperty
+
 
 <br/>
 
 #### 3.1 Object.defineProperty
-利用 Object.defineProperty 给数据添加了 getter 和 setter，目的就是为了在我们访问数据以及写数据的时候能自动执行一些逻辑：getter 做的事情是依赖收集，setter 做的事情是派发更新
+Vue实现数据驱动的核心是利用了ES5的Object.defineProperty。
 
-具体查看[文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+[`Object.defineProperty`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/definePropert)方法会直接在一个对象上定义一个新属性，或修改一个对象的现有属性，并返回这个对象。利用 Object.defineProperty 给数据添加了 getter 和 setter，可以使我们在访问数据以及写数据的时候能自动执行一些逻辑。
 
-在我们访问一个属性的时候会触发getter方法，当我们对一个属性做修改的时候会触发setter方法。
 ```
-Object.defineProperty(obj, key, {
-  enumerable: true,
-  configurable: true,
-  get: function() {
-      console.log('get');        
-  },
+Object.defineProperty(obj, 'text', {
   set: function(newVal) {
-      console.log('数据变化了');
-      updateUI();
+    updateUI();
   }
-});
+})
+```
+Vue采用这种数据劫持的方式，通过Object.defineProperty()方法来劫持 data 所有对象的 setter，使得data发生变动时通知ViewModel重新编译模板。
+
+*极简版双向绑定*
+{% raw %}
+<input id="input">
+<span id="span"></span>
+
+<script>
+  const obj = {};
+  Object.defineProperty(obj, 'text', {
+    get: function() {
+    },
+    set: function(newVal) {
+      console.log('set val:' + newVal);
+      document.getElementById('input').value = newVal;
+      document.getElementById('span').innerHTML = newVal;
+    }
+  });
+
+  const input = document.getElementById('input');
+  input.addEventListener('keyup', function(e){
+    obj.text = e.target.value;
+  })
+</script>
+{% endraw %}
+```
+<input id="input">
+<span id="span"></span>
+
+<script>
+  //
+  const obj = {};
+  Object.defineProperty(obj, 'text', {
+    get: function() {
+    },
+    set: function(newVal) {
+      console.log('set val:' + newVal);
+      document.getElementById('input').value = newVal;
+      document.getElementById('span').innerHTML = newVal;
+    }
+  });
+
+
+  const input = document.getElementById('input');
+  input.addEventListener('keyup', function(e){
+    obj.text = e.target.value;
+  })
+</script>
+```
+<img src="3.png">
+
+
+
+#### 3.2 依赖收集
+这看上去很简单，但是它背后又潜藏着几个要处理的问题：
+只执行`this.$data.myKey = 1`就可以触发与`myKey`相关的UI更新。
+- 我只想更新和`myKey`有关的DOM
+- 怎么使得 data对象 中key: [virtualDom1, virtualDom2, ...]一一对应？
+- 怎样统一收集这个对应关系？
+
+```
+<div>{{ myKey }}</div>
+<input value="{{ myKey }}" />
 ```
 
+模板渲染时，渲染到{{ myKey }}需要读取this.$data.myKey的值，触发了getter函数。此时，我们可以把myKey这个变量和{{ myKey }}所在的元素绑定起来。一个变量就可以对应多个元素，我们
+```
+var data = {
+  key1: val1,
+  key2: val2,
+}
 
-get 和 set，get 是一个给属性提供的 getter 方法，当我们访问了该属性的时候会触发 getter 方法；set 是一个给属性提供的 setter 方法，当我们对该属性做修改的时候会触发 setter 方法。
+var Dep = {
+  key1: [virtualDom1, virtualDom2, virtualDom3, ...],
+  key1: [virtualDom1, virtualDom4, ...],
+}
+```
 
+当key1被修改时，setting 根据 Dep 找到跟key1相对应的元素，只更新这一部分的UI。
 
-### 2. 依赖收集
-Vue采用数据劫持&发布-订阅模式的方式，通过Object.defineProperty()方法来劫持各属性的getter, setter，并在数据发生变动时通知ViewModel重新编译模板。
-
-
-
-getter 收集依赖
-这时候会做一些逻辑判断（保证同一数据不会被添加多次）后执行 dep.addSub(this)，那么就会执行 this.subs.push(sub)，也就是说把当前的 watcher 订阅到这个数据持有的 dep 的 subs 中，这个目的是为后续数据变化时候能通知到哪些 subs 做准备。
-
-清空依赖
-考虑到 Vue 是数据驱动的，所以每次数据变化都会重新 render，那么 vm._render() 方法又会再次执行，并再次触发数据的 getters
-
-考虑到一种场景，我们的模板会根据 v-if 去渲染不同子模板 a 和 b，当我们满足某种条件的时候渲染 a 的时候，会访问到 a 中的数据，这时候我们对 a 使用的数据添加了 getter，做了依赖收集，那么当我们去修改 a 的数据的时候，理应通知到这些订阅者。那么如果我们一旦改变了条件渲染了 b 模板，又会对 b 使用的数据添加了 getter，如果我们没有依赖移除的过程，那么这时候我去修改 a 模板的数据，会通知 a 数据的订阅的回调，这显然是有浪费的。
-
-因此 Vue 设计了在每次添加完新的订阅，会移除掉旧的订阅，这样就保证了在我们刚才的场景中，如果渲染 b 模板的时候去修改 a 模板的数据，a 数据订阅回调已经被移除了，所以不会有任何浪费，真的是非常赞叹 Vue 对一些细节上的处理。
 
 <img src="2.png">
-<img src="3.png">
-<img src="4.png">
+
 
 <br/>
+### 实现MVVM Demo
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Two-way data-binding</title>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="text">
+        {{ text }}
+    </div>
+    <script>
+        function observe (obj, vm) {
+            Object.keys(obj).forEach(function (key) {
+                defineReactive(vm, key, obj[key]);
+            });
+        }
+        function defineReactive (obj, key, val) {
+            var dep = new Dep();
+            Object.defineProperty(obj, key, {
+                get: function () {
+                    if (Dep.target) dep.addSub(Dep.target);
+                    return val
+                },
+                set: function (newVal) {
+                    if (newVal === val) return
+                    val = newVal;
+                    dep.notify();
+                }
+            });
+        }
+        function nodeToFragment (node, vm) {
+            var flag = document.createDocumentFragment();
+            var child;
+            while (child = node.firstChild) {
+                compile(child, vm);
+                flag.appendChild(child);
+            }
+            return flag;
+        }
+        function compile (node, vm) {
+            var reg = /\{\{(.*)\}\}/;
+            // 节点类型为元素
+            if (node.nodeType === 1) {
+                var attr = node.attributes;
+                // 解析属性
+                for (var i = 0; i < attr.length; i++) {
+                    if (attr[i].nodeName == 'v-model') {
+                        var name = attr[i].nodeValue; // 获取v-model绑定的属性名
+                        node.addEventListener('input', function (e) {
+                            // 给相应的data属性赋值，进而触发该属性的set方法
+                            vm[name] = e.target.value;
+                        });
+                        node.value = vm[name]; // 将data的值赋给该node
+                        node.removeAttribute('v-model');
+                    }
+                }
+                new Watcher(vm, node, name, 'input');
+            }
+            // 节点类型为text
+            if (node.nodeType === 3) {
+                if (reg.test(node.nodeValue)) {
+                    var name = RegExp.$1; // 获取匹配到的字符串
+                    name = name.trim();
+                    new Watcher(vm, node, name, 'text');
+                }
+            }
+        }
+
+        function Watcher (vm, node, name, nodeType) {
+        //  this为watcher函数
+            Dep.target = this;
+        //  console.log(this);
+            this.name = name;
+            this.node = node;
+            this.vm = vm;
+            this.nodeType = nodeType;
+            this.update();
+            Dep.target = null;
+        }
+        Watcher.prototype = {
+            update: function () {
+                this.get();
+                if (this.nodeType == 'text') {
+                    this.node.nodeValue = this.value;
+                }
+                if (this.nodeType == 'input') {
+                    this.node.value = this.value;
+                }
+            },
+            // 获取daa中的属性值
+            get: function () {
+                this.value = this.vm[this.name]; // 触发相应属性的get
+            }
+        }
+        function Dep () {
+            this.subs = []
+        }
+        Dep.prototype = {
+            addSub: function(sub) {
+                this.subs.push(sub);
+            },
+            notify: function() {
+                this.subs.forEach(function(sub) {
+                    sub.update();
+                });
+            }
+        };
+        function Vue (options) {
+            this.data = options.data;
+            var data = this.data;
+            observe(data, this);
+            var id = options.el;
+            var dom = nodeToFragment(document.getElementById(id), this);
+            // 编译完成后，将dom返回到app中
+            document.getElementById(id).appendChild(dom);
+        }
+        var vm = new Vue({
+            el: 'app',
+            data: {
+                text: 'hello world'
+            }
+        });
+    </script>
+</body>
+</html>
+```
+<br/>
+
 ### 参考资料
 - [简单理解MVVM--实现Vue的MVVM模式](https://zhuanlan.zhihu.com/p/38296857)
 - [被误解的 MVC](https://blog.devtang.com/2015/11/02/mvc-and-mvvm/)
 - [Vue.js中的MVVM](https://juejin.im/post/5b2f0769e51d45589f46949e)
 - [Vue.js的响应式系统原理](https://juejin.im/post/5b82b174518825431079d473)
 - [Vue技术揭秘](https://ustbhuangyi.github.io/vue-analysis/data-driven/)
+- [实现双向绑定Proxy比defineproperty优劣如何](https://www.jianshu.com/p/2df6dcddb0d7)
