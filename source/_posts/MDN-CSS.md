@@ -1,5 +1,5 @@
 ---
-title: MDN - CSS基本概念，flex布局与动画
+title: CSS文档
 date: 2018-10-06 11:12:55
 tags:
 - CSS
@@ -173,6 +173,7 @@ text-indent
 <br/>
 ### 3. 区块
 *`背景`*
+默认情况下，背景会延伸到边框所在的区域下层。
 background-color
 **background-image**: url('1.png') / 渐变 linear-gradient(渐变的方向, 开始的颜色, 结尾的颜色) to bottom, to right, to bottom right
 **background-repeat**: 指定背景图像如何重复。 no-repeat / repeat-x / repeat-y / repeat 

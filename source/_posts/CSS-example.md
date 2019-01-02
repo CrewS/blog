@@ -29,6 +29,54 @@ a{
 <br/>
 
 #### 3. 多行溢出
+{% raw %}
+<style>
+.content {
+  width: 80%;
+  max-height: 40px;
+  position: relative;
+  line-height: 1.4em;
+  overflow: hidden;
+  color: #4788C7;
+}
+
+.content::after {
+  content: "...";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-left: 40px;
+  background: -webkit-linear-gradient(left, transparent, #fff 55%);
+  background: -o-linear-gradient(right, transparent, #fff 55%);
+  background: -moz-linear-gradient(right, transparent, #fff 55%);
+  background: linear-gradient(to right, transparent, #fff 55%);
+}
+
+</style>
+<div class="content">多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出多行溢出</div>
+{% endraw %}
+
+```
+.content {
+  width: 80%;
+  max-height: 40px;
+  position: relative;
+  line-height: 1.4em;
+  overflow: hidden;
+}
+
+.content::after {
+  content: "...";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-left: 40px;
+  background: -webkit-linear-gradient(left, transparent, #fff 55%);
+  background: -o-linear-gradient(right, transparent, #fff 55%);
+  background: -moz-linear-gradient(right, transparent, #fff 55%);
+  background: linear-gradient(to right, transparent, #fff 55%);
+}
+```
 
 <br/>
 #### 4. 自动换行
@@ -129,8 +177,10 @@ element{
 <style>
 .box1{
   display: flex;
+  display: -ms-flexbox;
   min-height: 200px;
   flex-direction: column;
+  -ms-flex-direction: column;
   margin-top: 10px;
   background:#f6f6f6;
   text-align: center;
@@ -144,9 +194,11 @@ element{
 }
 .box1 .box1-header{
   flex:0 0 20px;
+  -ms-flex: 0 0 20px;
 }
 .box1 .box1-footer{
   flex:0 0 20px;
+  -ms-flex: 0 0 20px;
 }
 .box1-container{
   flex: 1;
@@ -165,6 +217,7 @@ element{
 }
 .box1-content{
   flex: 1;
+  -ms-flex: 1;
 }
 
 </style>
@@ -355,8 +408,35 @@ element{
 
 <br/>
 
+#### 7. 边框
+- 缝边效果
+{% raw %}
+<style>
+.border1{
+  width: 50px;
+  height: 50px;
+  margin: 15px 0;
+  background: #000;
+  border: 1px dashed #fff;
+  outline: 7px solid #000;
+}
+</style>
+<div class="border1"></div>
+{% endraw %}
 
+#### 8. 清除Select下拉箭头
+```
+select {
+  appearance:none;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  background: url("http://ourjs.github.io/static/2015/arrow.png") no-repeat scroll right center transparent;
+}
 
+// IE
+select::-ms-expand { display: none; }
+```
+<br/>
 #### 参考资料
 
 - [CSS3 Patterns Gallery 纹路背景](https://leaverou.github.io/css3patterns/)

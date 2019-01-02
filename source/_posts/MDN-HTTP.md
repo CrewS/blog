@@ -1,5 +1,5 @@
 ---
-title: MDN - HTTP
+title: HTTP
 date: 2018-10-15 10:03:16
 tags:
 - MDN

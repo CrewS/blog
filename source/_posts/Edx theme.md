@@ -1,5 +1,5 @@
 ---
-title: 【工作笔记】edX-h版主题定制
+title: Edx-h版主题定制
 date: 2018-08-16 17:49:23
 tags:
 - 工作
@@ -93,6 +93,7 @@ tags:
 ```
   cd devstack 
   docker-compose restart
+  // docker-compose restart lms
 ```
 <br>
 
@@ -103,7 +104,15 @@ To update a theme for Studio or the LMS, follow these steps.
   make lms-shell # 进入studio的shell 以便执行paver 指令
 ```
 - Change to the `/edx/app/edxapp/edx-platform` directory.
+
 - Execute the `paver update_assets` command to update all themes.
+```
+// only paver lms static sources 
+make lms-static
+
+// only update normal-theme 
+paver update_assets --theme-dirs=/edx/app/edxapp/edx-platform/themes --themes=normal-theme
+```
 - 自动编译sass
 ```
 // 注释加快自动编译速度 execute_webpack_watch(settings=settings)
@@ -144,5 +153,17 @@ Recreate up-to-date databases, static assets, etc.
   4. `make lms-restart` to restart the LMS
 
 <br>
-参考资料
+
+- 相对地址
+```
+  ${static.url('images/qrcode-ios.png')}
+```
+
+- 更新数据库
+```
+  python manage.py lms makemigrations
+  python manage.py lms migrate
+```
+
+#### 参考资料
 - [Changing Themes for an Open edX Site](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/configuration/changing_appearance/theming/index.html)

@@ -71,7 +71,7 @@ Git的分支，其实本质上仅仅是指向提交对象的可变指针。
   ($ git checkout -b testing)
 
   // 合并分支遇到冲突，解决冲突后，对每个文件使用git add命令将其标记为冲突已解决。
-  $ git merge master
+  $ git merge master --no-ff
 
   <<<<<<< HEAD:index.html
   <div id="footer">contact : email.support@github.com</div>
