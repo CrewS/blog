@@ -2,7 +2,8 @@
 title: React文档
 date: 2018-10-25 10:54:32
 tags:
-- React
+- JS
+category:
 - JS
 ---
 ### 1. Main Concept

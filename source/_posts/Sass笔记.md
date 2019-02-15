@@ -2,6 +2,8 @@
 title: Sass常用命令
 date: 2018-11-06 17:57:46
 tags: CSS
+category:
+- CSS
 ---
 Sass是一款强化CSS的辅助功能，它在CSS语法上增加了变量，嵌套，混合，导入等功能。 你还可以通过函数进行颜色值与属性值得运算，使用控制指令(control directives)等高级功能。
 <br/>
@@ -96,6 +98,9 @@ notice{ @include rounded-corners }
     @extend .error;
     border-width: 3px;
   }
+  .hoverlink{
+    @extend a:hover
+  }
   ```
 
 <br/>
@@ -177,4 +182,75 @@ $value: 576px;
   .sidebar{ width: 500px }
 }
 ```
+<br/>
 
+#### 5.4 @if
+当@if的表达式返回值不是false或null时，条件成立，输出{}内的代码。
+```
+$type: monster;
+p{
+  @if type == ocean{
+    color: blue;
+  } @else if $type == monster{
+    color: green;
+  } @else{
+    color: black;
+  }
+}
+```
+<br/>
+
+#### 5.5 @for, @each
+```
+@for $i from 1 through 3{
+  .item-#{$i}{
+    width: 2em * $i;
+  }
+}
+
+@each $animal in puma, sea-slug, egret, salamander{
+  .#{$animal}-icon{
+    background: url('/images/#{$animal}.png')
+  }
+}
+
+@each $animal, $color, $cursor in (puma, black, default),
+                                  (sea-slug, blue, pointer),
+                                  (egret, white, move) {
+  .#{$animal}-icon {
+    background-image: url('/images/#{$animal}.png');
+    border: 2px solid $color;
+    cursor: $cursor;
+  }
+}
+```
+<br/>
+
+#### 5.6 @while
+```
+$i: 6;
+@while $i>0{
+  .item-#{$i}{ width: 2em * $i}
+  $i: $i -2
+}
+```
+<br/>
+
+#### 5.7 @function
+```
+$grid-width: 40px;
+$gutter-width: 10px;
+
+@function grid-width($n){
+  @return $n * $grid-width + ($n - 1) * $gutter-width;
+}
+
+#sidebar{ width: grid-width(5) }
+```
+
+#### 6. 其他
+#### 6.1 calc在less编译时被计算
+`{width: calc(100% - 30px)}`Less会把这个当成运算式去执行，解析成`{width: calc(70%)}`。改变写法:
+```
+div{ width: calc(~"100% - 30px")}
+```

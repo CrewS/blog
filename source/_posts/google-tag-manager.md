@@ -1,7 +1,9 @@
 ---
 title: Google-tag-manager设置
 date: 2018-08-16 17:49:23
-tags: 工作
+tags: 工作笔记
+category:
+- 工作笔记
 ---
 
 ### 1. 登录

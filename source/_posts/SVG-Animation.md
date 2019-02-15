@@ -2,7 +2,9 @@
 title: SVG Animation, SVG spi
 date: 2018-10-05 16:28:15
 tags:
-- SVG
+- CSS
+category:
+- CSS
 ---
 ### 1. SVG Animation
 Animation is done by manipulating the attributes of shapes over time. This is done using one or more of the 5 SVG animation elements:`<set> <animate> <animateColor> <animateTransform> <animateMotion>`

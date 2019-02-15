@@ -2,6 +2,7 @@
 title: CSS常用实例
 date: 2018-11-06 17:57:46
 tags: CSS
+category: CSS
 ---
 
 #### 1. 全屏背景
@@ -93,225 +94,81 @@ element{
 ```
 
 <br/>
-#### 5. flex布局
-- 网格布局，平均分布
-{% raw %}
-<style>
-.box{
-  width:100%;
-  height:50px;
-  display:flex;
-  margin-top:10px;
-  background:#f6f6f6;
-}
-.item{
-  background:#fff;
-  margin:10px;
-  flex:1;
-}
-</style>
-<div class="box">
-  <div class="item"></div>
-  <div class="item"></div>
-  <div class="item"></div>
-</div>
-{% endraw %}
+#### 5. flex:上中下布局
+Chrome, Firefox, Safari, IE11, IE10有效
 ```
-.box{
-  display: flex;
-}
-.item{
-  flex: 1;
-}
-<div class="box">
-  <div class="item"></div>
-  <div class="item"></div>
-  <div class="item"></div>
-</div>
-```
-<br/>
-
-- 百分比布局
-{% raw %}
-<style>
-.box{
-  width:100%;
-  height:50px;
-  display:flex;
-  margin-top:10px;
-  background:#f6f6f6;
-  text-align:center;
-}
-.item1{
-  background:#fff;
-  margin:10px;
-  flex:0 0 25%;
-}
-.item2{
-  background:#fff;
-  margin:10px;
-  flex:1;
-}
-</style>
-<div class="box">
-  <div class="item1">1/4</div>
-  <div class="item2">auto</div>
-</div>
-{% endraw %}
-```
-.box{
-  display:flex;
-}
-.item1{
-  flex:0 0 25%;
-}
-.item2{
-  flex:1;
-}
-```
-<br/>
-
-- 圣杯布局： 页面从上到下，分成header, body, footer。其body从左到右又分为导航，主栏，副栏。
-固定的底栏：页面内容太少，无法占满一屏的高度，底栏就会抬高到页面的中间，这时可以采用该布局。
-{% raw %}
-<style>
-.box1{
-  display: flex;
-  display: -ms-flexbox;
-  min-height: 200px;
-  flex-direction: column;
-  -ms-flex-direction: column;
-  margin-top: 10px;
-  background:#f6f6f6;
-  text-align: center;
-  padding:10px;
-}
-.box1 div{
-  background: #fff;
-}
-.box1 .box1-container{
-  background: #f6f6f6;
-}
-.box1 .box1-header{
-  flex:0 0 20px;
-  -ms-flex: 0 0 20px;
-}
-.box1 .box1-footer{
-  flex:0 0 20px;
-  -ms-flex: 0 0 20px;
-}
-.box1-container{
-  flex: 1;
-  display:flex;
-  margin: 10px 0;
-}
-.box1-aside{
-  order: -1;
-  flex: 0 0 50px;
-  margin-right: 10px;
-}
-.box1-right-aside{
-  order: 1;
-  flex: 0 0 100px;
-  margin-left: 10px;
-}
-.box1-content{
-  flex: 1;
-  -ms-flex: 1;
-}
-
-</style>
-<div class="box1">
-  <div class="box1-header">header</div>
-  <div class="box1-container">
-    <div class="box1-aside">aside</div>
-    <div class="box1-content">content</div>
-    <div class="box1-right-aside">right-aside</div>
+<html>
+  <style>
+    .app{ 
+      display: flex
+    }
+    .wrapper{ 
+      display: flex; 
+      flex-direction: column; 
+      min-height: 100vh;
+      width: 100%;
+    }
+    section{ 
+      flex: 1 0 auto;
+    }
+    header, footer{ 
+      height: 60px;
+      background: blue;
+    }
+  </style>
+  <div class="app">
+    <div class="wrapper">
+      <header></header>
+      <section></section>
+      <footer></footer>
+    </div>
   </div>
-  </section>
-  <div class="box1-footer">footer</div>
-</div>
-{% endraw %}
+</html>
 ```
-.box{
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-}
-.header, .footer{
-  flex: 1;
-}
-.container{
-  flex: 1;
-  display: flex;
-}
-.aside, .right-aside{
-  flex: 0 0 100px;
-}
-.content{
-  flex: 1;
-}
-<div class="box">
-  <div class="header">header</div>
-  <div class="container">
-    <div class="aside">aside</div>
-    <div class="content">content</div>
-    <div class="right-aside">right-aside</div>
-  </div>
-  <div class="footer">footer</div>
-</div>
-```
-
-<br/>
-- 流式布局: 每行的项目数固定，会自动分行
-{% raw %}
-<style>
-.parent {
-  width: 100%;
-  height: 150px;
-  background-color: #f6f6f6;
-  display: flex;
-  flex-flow: row wrap;
-  padding: 10px;
-}
-
-.child {
-  box-sizing: border-box;
-  background-color: #fff;
-  flex: 0 0 30%;
-  height: 50px;
-  margin: 10px 1.5% 0;
-}
-</style>
-<div class="parent">
-  <div class="child"></div>
-  <div class="child"></div>
-  <div class="child"></div>
-  <div class="child"></div>
-  <div class="child"></div>
-</div>
-{% endraw %}
-
-  ```
-  .parent {
-    width: 100%;
-    height: 150px;
-    display: flex;
-    flex-flow: row wrap;
-  }
-
-  .child {
-    box-sizing: border-box;
-    flex: 0 0 30%;
-    height: 50px;
-    margin: 10px 1.5% 0;
-  }
-  ```
-
 <br/>
 
-#### 6. 纹理背景
-更多详情查看 https://leaverou.github.io/css3patterns/
+#### 6. 设置Select下拉箭头
+```
+select {
+  appearance:none;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  background: url("http://ourjs.github.io/static/2015/arrow.png") no-repeat scroll right center transparent;
+}
+
+// IE
+select::-ms-expand { display: none; }
+```
+<br/>
+
+#### 7. `<input> checkbox radio`样式自定义
+- 方法1 图片替换
+```
+
+```
+- 方法2 
+
+
+#### 8. 弹窗，遮罩后内容不滚动
+Bootstrap, Ant design方法, 弹窗出现时给body添加行内样式`{overflow: hidden}`， 弹窗消失时`{overflow: auto}`
+
+
+#### 9. 阻止因出现滚动条导致页面抖动
+信息流页面，如新浪微博，开始只有头部一些信息加载，此时页面高度有限，没有滚动条；然后，更多内容显示，滚动条出现。 `margin: 0 auto`主体元素自然会做偏移——跳动产生。
+```
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body {
+  width: 100vw;
+  overflow-x: hidden;
+  padding-left: calc(100vw - 100%);
+}
+```
+
+#### 10. 纹理背景
+[更多详情查看](https://leaverou.github.io/css3patterns/)
 {% raw %}
 <style>
 .veins div{
@@ -408,38 +265,10 @@ element{
 
 <br/>
 
-#### 7. 边框
-- 缝边效果
-{% raw %}
-<style>
-.border1{
-  width: 50px;
-  height: 50px;
-  margin: 15px 0;
-  background: #000;
-  border: 1px dashed #fff;
-  outline: 7px solid #000;
-}
-</style>
-<div class="border1"></div>
-{% endraw %}
-
-#### 8. 清除Select下拉箭头
-```
-select {
-  appearance:none;
-  -moz-appearance:none;
-  -webkit-appearance:none;
-  background: url("http://ourjs.github.io/static/2015/arrow.png") no-repeat scroll right center transparent;
-}
-
-// IE
-select::-ms-expand { display: none; }
-```
-<br/>
 #### 参考资料
 
 - [CSS3 Patterns Gallery 纹路背景](https://leaverou.github.io/css3patterns/)
 - [Flex 布局教程：实例篇](http://www.ruanyifeng.com/blog/2015/07/flex-examples.html)
 - [多行溢出](https://www.jianshu.com/p/d2be62a507b8)
 - 《图解CSS3·核心技术与案例实践》 大漠[著]
+- [阻止因出现滚动条导致页面抖动](https://blog.csdn.net/zh_rey/article/details/77531224)
